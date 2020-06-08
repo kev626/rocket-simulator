@@ -8,7 +8,10 @@ public class AngularController implements Controller {
 
     private double elaspsedTime = 0;
 
-    private double targetingTime = 0.5;
+    private double targetingTime = 0.2;
+
+    private double integral = 0;
+    private double kI = 0.144;
 
     public AngularController() {
 
@@ -17,6 +20,10 @@ public class AngularController implements Controller {
     public double runControl(LogEntry entry, double delta, double setpoint) {
         elaspsedTime += delta;
         // Simulate propellant mass loss
+
+        double error = setpoint - entry.getRotationX();
+        integral += error * delta;
+
         double mass = RocketProperties.MASS - MathUtil.lerp(0, RocketProperties.PROPELLANT_MASS, elaspsedTime / RocketProperties.BURN_TIME);
         double thrust = Math.sqrt(entry.getAcceleration() * entry.getAcceleration() + entry.getXAccel() * entry.getXAccel()) * mass;
 
@@ -25,7 +32,7 @@ public class AngularController implements Controller {
 
         double tvcAngle = Math.asin(targetTorque / (RocketProperties.MOMENT_ARM * thrust));
 
-        return tvcAngle;
+        return tvcAngle + kI * integral;
     }
 
 }

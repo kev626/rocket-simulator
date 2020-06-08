@@ -32,7 +32,7 @@ public class Simulator {
         int cyclesUntilBurnComplete = (int) (SimulatorProperties.CONTROL_REFRESH_FREQUENCY * RocketProperties.BURN_TIME);
         double deltaTimeSeconds = 1 / SimulatorProperties.CONTROL_REFRESH_FREQUENCY;
 
-        controller = new CompositeController(new PositionController(), new AngularController());
+        controller = new CompositeController(/*new PositionController(), */new AngularController());
 
         boolean isBurning = true;
         double apogee = 0;
