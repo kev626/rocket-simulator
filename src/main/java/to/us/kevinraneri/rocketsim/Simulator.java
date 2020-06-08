@@ -1,8 +1,9 @@
 package to.us.kevinraneri.rocketsim;
 
+import to.us.kevinraneri.rocketsim.control.CompositeController;
 import to.us.kevinraneri.rocketsim.control.Controller;
-import to.us.kevinraneri.rocketsim.control.PIDController;
-import to.us.kevinraneri.rocketsim.control.SmarterController;
+import to.us.kevinraneri.rocketsim.control.AngularController;
+import to.us.kevinraneri.rocketsim.control.PositionController;
 import to.us.kevinraneri.rocketsim.log.LogEntry;
 import to.us.kevinraneri.rocketsim.log.StateLog;
 import to.us.kevinraneri.rocketsim.settings.RocketProperties;
@@ -31,7 +32,7 @@ public class Simulator {
         int cyclesUntilBurnComplete = (int) (SimulatorProperties.CONTROL_REFRESH_FREQUENCY * RocketProperties.BURN_TIME);
         double deltaTimeSeconds = 1 / SimulatorProperties.CONTROL_REFRESH_FREQUENCY;
 
-        controller = new SmarterController();
+        controller = new CompositeController(new PositionController(), new AngularController());
 
         boolean isBurning = true;
         double apogee = 0;
@@ -144,7 +145,7 @@ public class Simulator {
         double newXVel = lastState.getXVel() + rocketXAccel * delta;
         double newXPos = lastState.getXPos() + lastState.getXVel() * delta + 0.5 * rocketXAccel * delta * delta;
 
-        double newTvcSetX = controller.runControl(lastState, delta);
+        double newTvcSetX = controller.runControl(lastState, delta, 0);
 
         if (newTvcSetX > RocketProperties.TVC_MAX) newTvcSetX = RocketProperties.TVC_MAX;
         if (newTvcSetX < -RocketProperties.TVC_MAX) newTvcSetX = -RocketProperties.TVC_MAX;
