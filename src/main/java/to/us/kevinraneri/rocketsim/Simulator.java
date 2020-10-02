@@ -1,5 +1,7 @@
 package to.us.kevinraneri.rocketsim;
 
+import org.spongepowered.noise.Noise;
+import org.spongepowered.noise.NoiseQuality;
 import to.us.kevinraneri.rocketsim.control.CompositeController;
 import to.us.kevinraneri.rocketsim.control.Controller;
 import to.us.kevinraneri.rocketsim.control.AngularController;
@@ -49,6 +51,8 @@ public class Simulator {
             isBurning = i <= cyclesUntilBurnComplete;
 
             double currentTime = i * deltaTimeSeconds;
+
+            if (!isBurning) break;
 
             runCycle(currentTime, deltaTimeSeconds, isBurning);
             double nowAltitude = log.getLastState().getAltitude();
@@ -128,7 +132,9 @@ public class Simulator {
         double newAngle = lastState.getRotationX() + lastState.getAngVelocity() * delta + 0.5 * angAccel * delta * delta;
 
         if (isBurning) {
-            newAngle *= 1 + RocketProperties.PRESSURE_CONSTANT * delta; // Simulate some extra instability
+            // Simulate wind
+            double windAmountRaw = 2 * (Noise.gradientCoherentNoise3D(lastState.getXPos() * .1, lastState.getAltitude() * .1, lastState.getXPos() * .1, 0, NoiseQuality.STANDARD) - 0.5);
+            newAngle += windAmountRaw * 0.01;
         }
 
         double gravitationalForce = mass * SimulatorProperties.GRAVITY;

@@ -21,7 +21,7 @@ public class RocketProperties {
     public static final double MOMENT_ARM = 0.355;
 
     // TVC mount X and Y mounting/trim error in degrees
-    public static final double TVC_ERROR_X = Math.toRadians(2);
+    public static final double TVC_ERROR_X = Math.toRadians(1.5);
     public static final double TVC_ERROR_Y = 0;
 
     // TVC Servo correction speed in sec/60deg
